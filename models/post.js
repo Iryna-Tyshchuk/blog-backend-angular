@@ -4,9 +4,9 @@ const Joi = require("joi");
 const { handleMongooseError } = require("../helpers");
 
 const topicList = ["Hobby", "Travel", "Home", "Lifestyle"];
-const dateRegexp = /^\d{2}-\d{2}-\d{4}$/;
+
 const imageSchema = new Schema({
-  title: { type: String, default: "Picture" },
+  titleImg: { type: String, default: "Picture" },
   url: { type: String, required: true }
 });
 const commentsSchema = new Schema({
@@ -22,24 +22,23 @@ const postSchema = new Schema(
     },
     subtitle: {
       type: String,
-      required: true,
+      required: [true, "Set subtitle for post "],
     },
     description: {
       type: String,
-      required: true,
+      required: [true, "Set description for post "],
     },
     topic: {
       type: String,
       enum: topicList,
-      // default: "Lifestyle",
-      required: true,
+      default: "Lifestyle",
+      required: [true, "Choose one of topics: Hobby, Travel, Home, Lifestyle "],
     },
     images: [imageSchema],
     comments: [commentsSchema],
-    date: {
-      type: String,
-      match: dateRegexp,
-      default: "17-05-2023",
+    postDate: {
+      type: Date,
+      default: Date.now(),
     },
   },
   { versionKey: false, timestamps: true }
@@ -53,10 +52,10 @@ const addSchema = Joi.object({
   subtitle: Joi.string(),
   description: Joi.string(),
   topic: Joi.string().valid(...topicList),
-  date: Joi.string().pattern(dateRegexp),
-  images: Joi.array().items(
-    Joi.object({ title: Joi.string(), url: Joi.string() })
-  ),
+  date: Joi.date(),
+  // images: Joi.array().items(
+  //   Joi.object({ title: Joi.string(), url: Joi.string() })
+  // ),
   comments: Joi.array().items(
     Joi.object({ author: Joi.string(), comment: Joi.string() })
   ),
