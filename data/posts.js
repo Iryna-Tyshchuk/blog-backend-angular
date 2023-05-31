@@ -1,4 +1,4 @@
-const Post = require("../models/post");
+const { Post } = require("../models/post");
 
 const getAllPosts = async (
   pageNumber,
@@ -34,6 +34,8 @@ const getAllPosts = async (
   }
 
   const totalPosts = await Post.countDocuments($match);
+  if (!totalPosts) return { totalPosts, posts: [] };
+
   pipeline.push({ $match });
 
   if (filter === "Alphabet") {
